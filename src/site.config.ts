@@ -147,7 +147,7 @@ const config: SiteConfig = {
   // Social links to display in the footer.
   socialLinks: {
     github: 'https://github.com/YuYoung06129',
-    email: 'burdock129@gmail.com',
+    email: 'me@burdock129.kr',
     rss: true, // Set to true to include an RSS feed link in the footer
   },
   // Configuration for Giscus comments.

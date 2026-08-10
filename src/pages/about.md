@@ -4,7 +4,7 @@ title: YuYoung Sung
 ---
 ## Information 
 - Github: <a href="https://github.com/YuYoung06129">YuYoung06129</a>
-- Email: burdock129@gmail.com
+- Email: me@burdock129.kr
 - Discord: @burdock129
 - Linkedin: <a href="https://www.linkedin.com/in/burdock129">burdock129</a>
 - Blog: <a href="http://burdock129.tistory.com">burdock129.tistory.com</a>
@@ -32,12 +32,14 @@ title: YuYoung Sung
 - 3rd, Seoul Skills Competition ITNSA 2023
 
 ## CTF Organizations
+- Codegate 2026
+- Hacktheon Sejong 2026
 - WhiteHat Contest 2025
 - KERIS CTF 2025 
 - LG U+ Security Hackathon 2025
 - FIESTA 2025
 - Cyber Conflict Exercise 2025
-- Hacksiumbusan 2025
+- Hacksium Busan 2025
 - Ajou COSS 2025
 - Codegate 2025
 
