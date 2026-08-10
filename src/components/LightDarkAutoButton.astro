@@ -1,0 +1,82 @@
+---
+import IconMoon from '~/icons/moon.svg'
+import siteConfig from '~/site.config'
+let lightTheme = siteConfig.themes.include[0]
+let darkTheme = siteConfig.themes.include[1]
+---
+
+<button
+  id="theme-change-button"
+  class="block ml-auto"
+  data-light={lightTheme}
+  data-dark={darkTheme}
+>
+  <!-- Replaced light icon with custom inline SVG as requested -->
+  <svg id="icon-light" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="hidden size-6 text-accent" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2"></path><path d="M12 20v2"></path><path d="m4.93 4.93 1.41 1.41"></path><path d="m17.66 17.66 1.41 1.41"></path><path d="M2 12h2"></path><path d="M20 12h2"></path><path d="m6.34 17.66-1.41 1.41"></path><path d="m19.07 4.93-1.41 1.41"></path></svg>
+  <IconMoon id="icon-dark" class="hidden size-6 text-accent" />
+</button>
+
+<script>
+  const themeButton = document.getElementById('theme-change-button')
+  const lightThemeId = themeButton?.getAttribute('data-light')
+  const darkThemeId = themeButton?.getAttribute('data-dark')
+  const sunIcon = themeButton?.querySelector('#icon-light')
+  const moonIcon = themeButton?.querySelector('#icon-dark')
+  const updateIcons = (theme: string) => {
+    if (theme === lightThemeId) {
+      sunIcon?.classList.remove('hidden')
+      moonIcon?.classList.add('hidden')
+    } else {
+      sunIcon?.classList.add('hidden')
+      moonIcon?.classList.remove('hidden')
+    }
+  }
+  // Apply the fixed color palette requested by the user
+  const applyPalette = () => {
+    const root = document.documentElement
+    // Character / branding colors
+    root.style.setProperty('--color-hair', '#FF9F45')
+    root.style.setProperty('--color-eye', '#E26A2C')
+    root.style.setProperty('--color-skin', '#FFE3C6')
+    root.style.setProperty('--color-hoodie', '#FF6D1C')
+    root.style.setProperty('--color-hoodie-inner', '#FFFFFF')
+    root.style.setProperty('--color-shade-black', '#2B2B2B')
+    // Make accent follow hoodie color so UI accents match the palette
+    root.style.setProperty('--theme-accent', '#FF6D1C')
+  }
+  // Apply explicit light/dark theme vars so white mode shows properly
+  const applyThemeMode = (theme: string) => {
+    const root = document.documentElement
+    if (theme === lightThemeId) {
+      // Explicit light theme overrides for good contrast
+      root.style.setProperty('--theme-background', '#ffffff')
+      root.style.setProperty('--theme-foreground', '#2B2B2B')
+      root.style.setProperty('--theme-heading1', '#2B2B2B')
+      root.style.setProperty('--theme-heading2', '#2B2B2B')
+      root.style.setProperty('--theme-link', '#FF6D1C')
+    } else {
+      // Remove explicit overrides so generated theme CSS can take effect for dark
+      root.style.removeProperty('--theme-background')
+      root.style.removeProperty('--theme-foreground')
+      root.style.removeProperty('--theme-heading1')
+      root.style.removeProperty('--theme-heading2')
+      root.style.removeProperty('--theme-link')
+    }
+  }
+  // Initialize to stored theme or prefer dark
+  let currentTheme = localStorage.getItem('data-theme') || (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches ? darkThemeId : lightThemeId)
+  updateIcons(currentTheme)
+  applyPalette()
+  applyThemeMode(currentTheme)
+  themeButton?.addEventListener('click', () => {
+    // Toggle between light and dark only
+    const stored = localStorage.getItem('data-theme') || ''
+    const active = stored === lightThemeId || stored === darkThemeId ? stored : document.documentElement.getAttribute('data-theme') || lightThemeId
+    const newTheme = active === lightThemeId ? darkThemeId : lightThemeId
+    updateIcons(newTheme)
+    localStorage.setItem('data-theme', newTheme)
+    document.documentElement.setAttribute('data-theme', newTheme)
+    applyPalette()
+    applyThemeMode(newTheme)
+  })
+</script>
