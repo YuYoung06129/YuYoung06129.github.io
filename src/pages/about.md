@@ -7,7 +7,7 @@ title: YuYoung Sung
 - Email: me@burdock129.kr
 - Discord: @burdock129
 - Linkedin: <a href="https://www.linkedin.com/in/burdock129">burdock129</a>
-- Blog: <a href="http://blog.burdock129.kr">blog</a>
+- Blog: <a href="http://blog.burdock129.kr">blog.burdock129.kr</a>
 
 ## Education
 - Sangmyung University (Mar 2026 ~ Present)
