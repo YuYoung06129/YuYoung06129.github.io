@@ -43,6 +43,9 @@ title: YuYoung Sung
 - Ajou COSS 2025
 - Codegate 2025
 
+## Bug Bounty
+- To be continued...
+
 ## Projects
 - Ransomware IoC Collection
 - Stock Chart Analysis using AI
