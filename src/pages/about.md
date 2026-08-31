@@ -21,7 +21,7 @@ title: YuYoung Sung
 - Seoul Women's University, Gifted Education Center for Information Security (Apr 2023 ~ Nov 2023)
 
 ## Awards
-- 1st, Kaspersky{ CTF 2026 (Team: Odin)
+- 1st, Kaspersky CTF 2026 (Team: Odin)
 - 3rd, Line CTF 2025 (Team: Odin)
 - 1st, Kaspersky CTF 2025 (Team: Odin)
 - 13th, SECCON CTF 13 Quals (Team: Odin)
