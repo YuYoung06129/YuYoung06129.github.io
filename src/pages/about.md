@@ -33,8 +33,12 @@ title: YuYoung Sung
 - 3rd, Seoul Skills Competition ITNSA 2023
 
 ## CTF Organizations
+
+**2026**
+- Cyber Conflict Exercise 2026
 - Codegate 2026
 - Hacktheon Sejong 2026
+**2025**
 - WhiteHat Contest 2025
 - KERIS CTF 2025 
 - LG U+ Security Hackathon 2025
@@ -45,7 +49,8 @@ title: YuYoung Sung
 - Codegate 2025
 
 ## Bug Bounty
-- To be continued...
+- KVE-2026-xxxx (Stored XSS)
+- KVE-2026-xxxx (Stored XSS)
 
 ## Projects
 - Ransomware IoC Collection
