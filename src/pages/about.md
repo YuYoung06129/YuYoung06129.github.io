@@ -38,6 +38,7 @@ title: YuYoung Sung
 - Cyber Conflict Exercise 2026
 - Codegate 2026
 - Hacktheon Sejong 2026
+
 **2025**
 - WhiteHat Contest 2025
 - KERIS CTF 2025 
