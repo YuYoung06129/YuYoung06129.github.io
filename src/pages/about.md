@@ -35,6 +35,7 @@ title: YuYoung Sung
 ## CTF Organizations
 
 **2026**
+- FIESTA 2026
 - Cyber Conflict Exercise 2026
 - Codegate 2026
 - Hacktheon Sejong 2026
