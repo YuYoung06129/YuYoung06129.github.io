@@ -53,6 +53,8 @@ title: YuYoung Sung
 ## Bug Bounty
 - KVE-2026-xxxx (Stored XSS)
 - KVE-2026-xxxx (Stored XSS)
+- <a href="https://www.mozilla.org/en-US/security/advisories/mfsa2026-122/#CVE-2026-118175">CVE-2026-118175</a>
+- <a href="https://www.mozilla.org/en-US/security/advisories/mfsa2026-122/#CVE-2026-118176">CVE-2026-118176</a>
 
 ## Projects
 - Ransomware IoC Collection
