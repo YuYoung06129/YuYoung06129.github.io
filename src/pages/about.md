@@ -35,6 +35,8 @@ title: YuYoung Sung
 ## CTF Organizations
 
 **2026**
+- ACDC 2026
+- UHCON 2026
 - FIESTA 2026
 - Cyber Conflict Exercise 2026
 - Codegate 2026
@@ -51,10 +53,9 @@ title: YuYoung Sung
 - Codegate 2025
 
 ## Bug Bounty
-- KVE-2026-xxxx (Stored XSS)
-- KVE-2026-xxxx (Stored XSS)
 - <a href="https://www.mozilla.org/en-US/security/advisories/mfsa2026-122/#CVE-2026-118175">CVE-2026-118175</a>
 - <a href="https://www.mozilla.org/en-US/security/advisories/mfsa2026-122/#CVE-2026-118176">CVE-2026-118176</a>
+- To Be Continued....
 
 ## Projects
 - Ransomware IoC Collection
