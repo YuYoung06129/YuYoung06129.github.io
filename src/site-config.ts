@@ -179,13 +179,7 @@ export const config: Config = {
     },
     recentPosts: 5,
     education: [],
-    skills: [
-      {
-        title: 'Security',
-        items: ['Network Security', 'Digital Forensics', 'Web Hacking', 'Cryptography'],
-      },
-      { title: 'Research', items: ['CVE Analysis', 'Vulnerability Research', 'CTF'] },
-    ],
+    skills: [],
     showTags: false,
     showFriends: false,
   },
