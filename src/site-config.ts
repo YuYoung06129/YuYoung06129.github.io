@@ -129,7 +129,7 @@ export const config: Config = {
     description:
       'Security research, CVE analysis, web exploitation, forensics and cryptography.',
     lang: 'en',
-    favicon: '/favicon.svg',
+    favicon: '/umaru.png',
     avatar: '/avatar.jpg',
     ogImage: '/favicon.svg',
     since: 2025,

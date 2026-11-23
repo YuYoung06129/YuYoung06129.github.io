@@ -9,7 +9,6 @@ description: Interested in security research, CVE analysis, web hacking, forensi
 - Email: [me@burdock129.kr](mailto:me@burdock129.kr)
 - Discord: @burdock129
 - LinkedIn: [burdock129](https://www.linkedin.com/in/burdock129)
-- Blog: [burdock129.kr](https://burdock129.kr)
 
 ## Education
 
