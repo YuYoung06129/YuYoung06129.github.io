@@ -1,0 +1,47 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import { getBlogCollection, getUniqueTagsWithCount } from '@/utils/server'
+import { withBase } from '@/utils'
+import { localePath, prefixedLocales, t, type Locale } from '@/i18n'
+
+export function getStaticPaths() {
+  return prefixedLocales.map((locale) => ({ params: { locale } }))
+}
+
+interface Props {
+  renderLocale?: Locale
+}
+
+const { renderLocale } = Astro.props as Props
+const locale = renderLocale ?? (Astro.params.locale as Locale)
+const messages = t(locale)
+const tags = getUniqueTagsWithCount(await getBlogCollection(locale))
+---
+
+<BaseLayout title={messages.tags} description={`${tags.length} tags`}>
+  <div class="animate not-prose">
+    <header class="mb-8">
+      <h1 class="font-serif text-3xl font-semibold">{messages.tags}</h1>
+      <p class="mt-2 text-sm text-ink-soft">
+        {tags.length} {messages.tags.toLowerCase()}
+      </p>
+    </header>
+
+    {tags.length === 0 ? (
+      <p class="py-12 text-center text-ink-soft">{messages.noTags}</p>
+    ) : (
+      <div class="flex flex-wrap gap-x-5 gap-y-3">
+        {tags.map(([tag, count]) => (
+          <a
+            href={withBase(localePath(locale, `/tags/${tag}`))}
+            class="tag-link !text-sm"
+            data-astro-prefetch
+          >
+            #{tag}
+            <span class="font-mono text-xs">{count}</span>
+          </a>
+        ))}
+      </div>
+    )}
+  </div>
+</BaseLayout>

@@ -1,0 +1,23 @@
+---
+import type { GetStaticPaths, Page } from 'astro'
+import type { CollectionEntry } from 'astro:content'
+
+import BlogPage from '../[locale]/blog/[...page].astro'
+import { config } from '@/site-config'
+import { getBlogCollection, sortMDByDate } from '@/utils/server'
+
+export const prerender = true
+
+export const getStaticPaths = (async ({ paginate }) => {
+  const posts = sortMDByDate(await getBlogCollection('en'))
+  return paginate(posts, { pageSize: config.blog.pageSize })
+}) satisfies GetStaticPaths
+
+interface Props {
+  page: Page<CollectionEntry<'blog'>>
+}
+
+const { page } = Astro.props
+---
+
+<BlogPage {page} renderLocale="en" />

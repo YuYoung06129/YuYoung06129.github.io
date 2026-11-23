@@ -1,0 +1,72 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro'
+import { formatDate } from '@/utils'
+import { getBlogCollection, groupByYear, postUrl } from '@/utils/server'
+import { prefixedLocales, t, type Locale } from '@/i18n'
+
+export function getStaticPaths() {
+  return prefixedLocales.map((locale) => ({ params: { locale } }))
+}
+
+interface Props {
+  renderLocale?: Locale
+}
+
+const { renderLocale } = Astro.props as Props
+const locale = renderLocale ?? (Astro.params.locale as Locale)
+const messages = t(locale)
+const dateLocale = locale === 'ko' ? 'ko-KR' : 'en-US'
+const groups = groupByYear(await getBlogCollection(locale))
+---
+
+<BaseLayout title={messages.archives} description="Posts grouped by year">
+  <div class="animate not-prose">
+    <header class="mb-8">
+      <h1 class="font-serif text-3xl font-semibold">{messages.archives}</h1>
+      <p class="mt-2 text-sm text-ink-soft">
+        {[...groups.values()].reduce((n, g) => n + g.length, 0)} {messages.posts}
+      </p>
+    </header>
+
+    {groups.size === 0 ? (
+      <p class="py-12 text-center text-ink-soft">{messages.noPosts}</p>
+    ) : (
+      <div class="flex flex-col gap-10">
+        {[...groups.entries()].map(([year, posts]) => (
+          <section aria-label={`${year}`}>
+            <h2 class="mb-4 flex items-baseline gap-3 font-serif text-2xl font-semibold">
+              {year}
+              <span class="font-mono text-sm font-normal text-ink-soft">
+                {posts.length} {messages.posts}
+              </span>
+            </h2>
+            <ul class="flex flex-col divide-y divide-line border-y border-line">
+              {posts.map((post) => (
+                <li>
+                  <a
+                    href={postUrl(post.id)}
+                    class="group flex items-baseline gap-3 py-2.5 transition-colors hover:text-accent sm:gap-4"
+                    data-astro-prefetch
+                  >
+                    <time
+                      datetime={post.data.publishDate.toISOString()}
+                      class="w-[5ch] shrink-0 whitespace-nowrap font-mono text-xs text-ink-soft sm:w-24"
+                    >
+                      {formatDate(post.data.publishDate, dateLocale, {
+                        month: '2-digit',
+                        day: '2-digit',
+                      })}
+                    </time>
+                    <span class="line-clamp-2 min-w-0 break-words font-medium group-hover:underline group-hover:decoration-accent/60 group-hover:underline-offset-4 sm:block sm:truncate">
+                      {post.data.title}
+                    </span>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </section>
+        ))}
+      </div>
+    )}
+  </div>
+</BaseLayout>

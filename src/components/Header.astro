@@ -1,83 +1,248 @@
 ---
-import siteConfig from '~/site.config'
-import LightDarkAutoButton from '~/components/LightDarkAutoButton.astro'
-import Search from '~/components/Search.astro'
-import NavLink from '~/components/NavLink.astro'
+import { config } from '@/site-config'
+import { withBase } from '@/utils'
+import {
+  localeFromPath,
+  localePath,
+  locales,
+  switchLocalePath,
+  t,
+  type Locale,
+} from '@/i18n'
+import { getBlogCollection, postLocale, postSlug } from '@/utils/server'
 
-const lightDarkAutoTheme = true
+const pathname = Astro.url.pathname
+const locale = localeFromPath(pathname)
+const messages = t(locale)
+const posts = await getBlogCollection()
+
+const navLabels = {
+  Blog: messages.nav.blog,
+  Archives: messages.nav.archives,
+  Tags: messages.nav.tags,
+  About: messages.nav.about,
+} as const
+
+function languageHref(target: Locale): string {
+  if (/^\/about\/?$/.test(pathname)) return target === 'ko' ? '/ko' : '/about'
+
+  const postMatch = pathname.match(/^\/(?:ko\/)?blog\/(.+?)\/?$/)
+  if (postMatch && !/^\d+$/.test(postMatch[1])) {
+    const translated = posts.some(
+      (post) => postLocale(post.id) === target && postSlug(post.id) === postMatch[1],
+    )
+    return translated ? switchLocalePath(pathname, target) : localePath(target, '/blog')
+  }
+  if (/^\/(?:ko\/)?tags\/.+/.test(pathname)) return localePath(target, '/tags')
+  return switchLocalePath(pathname, target)
+}
+
+function navHref(link: string): string {
+  return link === '/about' ? '/about' : localePath(locale, link)
+}
+
+function isActive(link: string): boolean {
+  const href = withBase(navHref(link))
+  return pathname === href || pathname.startsWith(`${href}/`)
+}
 ---
 
-<header>
-  <div class="relative flex items-center justify-between bg-accent/10 rounded-xl">
+<header class="site-header not-prose sticky top-0 z-40 w-full shrink-0" id="site-header">
+  <div class="mx-auto flex h-14 max-w-5xl items-center justify-between gap-4 px-5 sm:px-8">
+    <!-- Brand -->
     <a
-      id="logo"
-      href="/"
-      class="block px-4 py-1.5 max-w-full no-underline items-center bg-accent text-background font-bold rounded-xl"
+      href={withBase(localePath(locale))}
+      class="group flex items-center gap-2"
+      aria-label={config.site.title}
     >
-      {siteConfig.title}
+      <span
+        class="i-lucide-feather text-lg text-accent transition-transform duration-300 group-hover:-rotate-12"
+        aria-hidden="true"
+      ></span>
+      <span class="font-serif text-lg font-semibold tracking-wide">
+        {config.site.title}
+      </span>
     </a>
-    <div class="flex items-center gap-3 sm:mr-3">
-  <Search trailingSlashes={siteConfig.trailingSlashes} />
-  <LightDarkAutoButton />
-      <nav id="nav-mobile" aria-label="Menu" class="p-0 text-accent sm:hidden">
-        <button
-          id="nav-mobile-button"
-          class="px-3 py-1 h-full cursor-pointer border-2 rounded-xl bg-background"
-          type="button"
-          aria-expanded="false"
-          aria-controls="nav-menu-list"
+
+    <!-- Nav -->
+    <nav class="hidden items-center gap-1 md:flex" aria-label="Primary navigation">
+      {config.header.menu.map((item) => (
+        <a
+          href={withBase(navHref(item.link))}
+          aria-current={isActive(item.link) ? 'page' : undefined}
+          class="nav-link rounded-md px-3 py-1.5 text-sm text-ink-soft transition-colors duration-200 hover:text-accent focus-visible:text-accent"
         >
-          ▾
-        </button>
-        <ul
-          id="nav-mobile-list"
-          class="invisible absolute flex flex-col bg-background shadow text-accent border-2 m-0 p-2.5 top-11.5 left-auto right-0 z-50 rounded-xl"
-        >
-          {
-            siteConfig.navLinks.map((link) => (
-              <li class="p-1" aria-expanded="false">
-                <NavLink link={link} />
-              </li>
-            ))
-          }
-        </ul>
+          {navLabels[item.title as keyof typeof navLabels] ?? item.title}
+        </a>
+      ))}
+    </nav>
+
+    <!-- Actions -->
+    <div class="flex items-center gap-1">
+      <nav class="me-1 flex items-center gap-2 text-sm" aria-label="Language">
+        {locales.map((item) => (
+          <a
+            href={withBase(languageHref(item))}
+            hreflang={item}
+            lang={item}
+            aria-current={locale === item ? 'page' : undefined}
+            data-language={item}
+            class="language-link lowercase text-ink-soft transition-colors hover:text-accent"
+          >
+            {item}
+          </a>
+        ))}
       </nav>
+      {config.search.enabled && (
+        <a
+          href={withBase(localePath(locale, '/search'))}
+          title={messages.search}
+          aria-label={messages.search}
+          class="icon-btn"
+          data-astro-prefetch
+        >
+          <span class="i-lucide-search size-5" aria-hidden="true" />
+        </a>
+      )}
+
+      <button
+        id="palette-toggle"
+        type="button"
+        class="icon-btn"
+        aria-label="Switch palette (ink / fresh)"
+        title="Switch palette"
+      >
+        <span class="i-lucide-feather icon-ink size-5" aria-hidden="true"></span>
+        <span class="i-lucide-leaf icon-fresh hidden size-5" aria-hidden="true"></span>
+      </button>
+
+      <button
+        id="theme-toggle"
+        type="button"
+        class="icon-btn"
+        aria-label="Toggle theme"
+        title="Toggle theme"
+      >
+        <span class="i-lucide-monitor icon-system size-5" aria-hidden="true"></span>
+        <span class="i-lucide-sun icon-light size-5" aria-hidden="true"></span>
+        <span class="i-lucide-moon icon-dark size-5" aria-hidden="true"></span>
+      </button>
     </div>
   </div>
-  <nav aria-label="Menu" class="p-0 mt-4 ml-0.5 text-accent hidden sm:block">
-    <ul class="flex flex-row text-accent">
-      {
-        siteConfig.navLinks.map((link) => (
-          <li class="mr-5" aria-expanded="true">
-            <NavLink link={link} />
-          </li>
-        ))
-      }
-    </ul>
-  </nav>
 </header>
 
-<script>
-  const navMobileButton = document.getElementById('nav-mobile-button')
-  const navMobileList = document.getElementById('nav-mobile-list')
-  const navMobileListItems = navMobileList?.querySelectorAll('li')
-  const toggleNavMobileMenu = (action: 'on' | 'off' | 'toggle') => {
-    let isNowOpen: boolean = false
-    if (action === 'on') {
-      isNowOpen = true
-      navMobileList?.classList.remove('invisible')
-    } else if (action === 'off') {
-      isNowOpen = false
-      navMobileList?.classList.add('invisible')
-    } else {
-      isNowOpen = !navMobileList?.classList.toggle('invisible')
-    }
-    navMobileButton?.setAttribute('aria-expanded', isNowOpen ? 'true' : 'false')
-    navMobileListItems?.forEach((listItem) => {
-      listItem.setAttribute('aria-expanded', isNowOpen ? 'true' : 'false')
-    })
+<!-- Mobile nav: in normal flow (scrolls away), only the slim bar stays sticky -->
+<nav
+  class="mobile-nav not-prose mx-auto flex max-w-5xl gap-1 overflow-x-auto px-5 pb-2 sm:px-8 md:hidden"
+  aria-label="Primary navigation"
+>
+  {config.header.menu.map((item) => (
+    <a
+      href={withBase(navHref(item.link))}
+      aria-current={isActive(item.link) ? 'page' : undefined}
+      class="nav-link flex-none rounded-md px-3 py-1 text-sm text-ink-soft transition-colors duration-200 hover:text-accent focus-visible:text-accent"
+    >
+      {navLabels[item.title as keyof typeof navLabels] ?? item.title}
+    </a>
+  ))}
+</nav>
+
+<style>
+  /* Sticky bar: transparent at top, frosted paper once scrolled */
+  .site-header {
+    transition:
+      background-color 0.25s ease,
+      border-color 0.25s ease,
+      backdrop-filter 0.25s ease;
+    border-bottom: 1px solid transparent;
   }
-  navMobileButton?.addEventListener('click', (_ev) => {
-    toggleNavMobileMenu('toggle')
+  .site-header.scrolled {
+    background-color: color-mix(in srgb, hsl(var(--paper) / 1) 82%, transparent);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom-color: hsl(var(--line) / 1);
+  }
+  :global(.dark) .site-header.scrolled {
+    background-color: color-mix(in srgb, hsl(var(--paper) / 1) 72%, transparent);
+  }
+
+  .nav-link[aria-current='page'] {
+    position: relative;
+    color: hsl(var(--accent));
+  }
+  .nav-link[aria-current='page']::after {
+    content: '';
+    position: absolute;
+    inset-inline: 0;
+    bottom: 0.125rem;
+    width: 1rem;
+    margin-inline: auto;
+    border-bottom: 1px solid currentColor;
+  }
+
+  .language-link[aria-current='page'] {
+    color: hsl(var(--accent));
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+
+  .icon-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 0.5rem;
+    color: hsl(var(--ink-soft) / 1);
+    transition:
+      color 0.2s ease,
+      background-color 0.2s ease;
+  }
+  .icon-btn:hover {
+    color: hsl(var(--accent) / 1);
+    background-color: hsl(var(--wash) / 1);
+  }
+
+  /* Mobile nav row: scrollable, no visible scrollbar */
+  .mobile-nav {
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  .mobile-nav::-webkit-scrollbar {
+    display: none;
+  }
+
+  /* Theme icons: only the icon matching [data-theme] is shown */
+  #theme-toggle .icon-system,
+  #theme-toggle .icon-light,
+  #theme-toggle .icon-dark {
+    display: none;
+  }
+
+  :global(html[data-theme='light']) #theme-toggle .icon-light,
+  :global(html[data-theme='dark']) #theme-toggle .icon-dark,
+  :global(html[data-theme='system']) #theme-toggle .icon-system {
+    display: inline-block;
+  }
+
+  /* Palette icons: feather (ink) by default, leaf (fresh) when active */
+  :global(html[data-palette='fresh']) #palette-toggle .icon-ink {
+    display: none;
+  }
+  :global(html[data-palette='fresh']) #palette-toggle .icon-fresh {
+    display: inline-block;
+  }
+</style>
+
+<script>
+  const header = document.getElementById('site-header')
+  const onScroll = () => header?.classList.toggle('scrolled', window.scrollY > 8)
+  onScroll()
+  window.addEventListener('scroll', onScroll, { passive: true })
+
+  document.querySelectorAll<HTMLAnchorElement>('[data-language]').forEach((link) => {
+    link.addEventListener('click', () =>
+      localStorage.setItem('language', link.dataset.language ?? 'en'),
+    )
   })
 </script>
