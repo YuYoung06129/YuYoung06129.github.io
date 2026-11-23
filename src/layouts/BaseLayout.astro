@@ -86,21 +86,8 @@ const ogUrl = new URL(withBase(ogImage), Astro.site ?? 'https://example.com')
       <meta property="article:modified_time" content={modifiedDate.toISOString()} />
     )}
 
-    <!-- Theme + palette controller: first paint, toggle clicks and OS changes -->
+    <!-- Theme + palette controller: first paint and toggle clicks -->
     <script is:inline set:html={themeScript} />
-    {locale === 'en' && <script is:inline>
-      {
-        ;`(() => {
-            try {
-              const saved = localStorage.getItem('language')
-              if (!saved && navigator.language.toLowerCase().startsWith('ko')) {
-                const target = '/ko' + (location.pathname === '/' ? '' : location.pathname)
-                location.replace(target + location.search + location.hash)
-              }
-            } catch {}
-          })()`
-      }
-    </script>}
   </head>
 
   <body

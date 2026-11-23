@@ -1,7 +1,6 @@
-// Inlined in <head>: one controller for first paint, controls and OS changes.
+// Inlined in <head>: one controller for first paint and controls.
 ;(() => {
   const root = document.documentElement
-  const systemTheme = matchMedia('(prefers-color-scheme: dark)')
   const read = (key) => {
     try {
       return localStorage.getItem(key)
@@ -16,17 +15,17 @@
       // Switching still works when storage is unavailable.
     }
   }
-  const modes = ['system', 'light', 'dark']
+  const modes = ['light', 'dark']
   const palettes = ['ink', 'fresh']
   const storedTheme = read('ink-theme')
   const storedPalette = read('ink-palette')
   let theme = modes.includes(storedTheme) ? storedTheme : root.dataset.defaultTheme
   let palette = palettes.includes(storedPalette) ? storedPalette : root.dataset.defaultPalette
-  if (!modes.includes(theme)) theme = 'system'
+  if (!modes.includes(theme)) theme = 'light'
   if (!palettes.includes(palette)) palette = 'ink'
 
   const apply = () => {
-    const dark = theme === 'dark' || (theme === 'system' && systemTheme.matches)
+    const dark = theme === 'dark'
     root.classList.toggle('dark', dark)
     root.classList.toggle('fresh', palette === 'fresh')
     root.dataset.theme = theme
@@ -50,7 +49,7 @@
   document.addEventListener('click', (event) => {
     if (!(event.target instanceof Element)) return
     if (event.target.closest('#theme-toggle')) {
-      theme = modes[(modes.indexOf(theme) + 1) % modes.length]
+      theme = theme === 'light' ? 'dark' : 'light'
       save('ink-theme', theme)
       transition()
     } else if (event.target.closest('#palette-toggle')) {
@@ -58,8 +57,5 @@
       save('ink-palette', palette)
       transition()
     }
-  })
-  systemTheme.addEventListener('change', () => {
-    if (theme === 'system') apply()
   })
 })()

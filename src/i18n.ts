@@ -3,7 +3,9 @@ export const locales = ['en', 'ko'] as const
 export type Locale = (typeof locales)[number]
 
 export const defaultLocale: Locale = 'en'
-export const prefixedLocales = ['ko'] as const satisfies readonly Locale[]
+// Korean is generated only for translated post detail pages.
+// Shared pages such as home, About, archives, tags and search stay unprefixed.
+export const prefixedLocales: readonly Locale[] = []
 
 export function isLocale(value: string | undefined): value is Locale {
   return locales.includes(value as Locale)

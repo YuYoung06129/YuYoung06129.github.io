@@ -1,20 +1,10 @@
 ---
 import { config } from '@/site-config'
 import { withBase } from '@/utils'
-import {
-  localeFromPath,
-  localePath,
-  locales,
-  switchLocalePath,
-  t,
-  type Locale,
-} from '@/i18n'
-import { getBlogCollection, postLocale, postSlug } from '@/utils/server'
+import { t } from '@/i18n'
 
 const pathname = Astro.url.pathname
-const locale = localeFromPath(pathname)
-const messages = t(locale)
-const posts = await getBlogCollection()
+const messages = t('en')
 
 const navLabels = {
   Blog: messages.nav.blog,
@@ -23,26 +13,8 @@ const navLabels = {
   About: messages.nav.about,
 } as const
 
-function languageHref(target: Locale): string {
-  if (/^\/about\/?$/.test(pathname)) return target === 'ko' ? '/ko' : '/about'
-
-  const postMatch = pathname.match(/^\/(?:ko\/)?blog\/(.+?)\/?$/)
-  if (postMatch && !/^\d+$/.test(postMatch[1])) {
-    const translated = posts.some(
-      (post) => postLocale(post.id) === target && postSlug(post.id) === postMatch[1],
-    )
-    return translated ? switchLocalePath(pathname, target) : localePath(target, '/blog')
-  }
-  if (/^\/(?:ko\/)?tags\/.+/.test(pathname)) return localePath(target, '/tags')
-  return switchLocalePath(pathname, target)
-}
-
-function navHref(link: string): string {
-  return link === '/about' ? '/about' : localePath(locale, link)
-}
-
 function isActive(link: string): boolean {
-  const href = withBase(navHref(link))
+  const href = withBase(link)
   return pathname === href || pathname.startsWith(`${href}/`)
 }
 ---
@@ -51,7 +23,7 @@ function isActive(link: string): boolean {
   <div class="mx-auto flex h-14 max-w-5xl items-center justify-between gap-4 px-5 sm:px-8">
     <!-- Brand -->
     <a
-      href={withBase(localePath(locale))}
+      href={withBase('/')}
       class="group flex items-center gap-2"
       aria-label={config.site.title}
     >
@@ -68,7 +40,7 @@ function isActive(link: string): boolean {
     <nav class="hidden items-center gap-1 md:flex" aria-label="Primary navigation">
       {config.header.menu.map((item) => (
         <a
-          href={withBase(navHref(item.link))}
+          href={withBase(item.link)}
           aria-current={isActive(item.link) ? 'page' : undefined}
           class="nav-link rounded-md px-3 py-1.5 text-sm text-ink-soft transition-colors duration-200 hover:text-accent focus-visible:text-accent"
         >
@@ -79,23 +51,9 @@ function isActive(link: string): boolean {
 
     <!-- Actions -->
     <div class="flex items-center gap-1">
-      <nav class="me-1 flex items-center gap-2 text-sm" aria-label="Language">
-        {locales.map((item) => (
-          <a
-            href={withBase(languageHref(item))}
-            hreflang={item}
-            lang={item}
-            aria-current={locale === item ? 'page' : undefined}
-            data-language={item}
-            class="language-link lowercase text-ink-soft transition-colors hover:text-accent"
-          >
-            {item}
-          </a>
-        ))}
-      </nav>
       {config.search.enabled && (
         <a
-          href={withBase(localePath(locale, '/search'))}
+          href={withBase('/search')}
           title={messages.search}
           aria-label={messages.search}
           class="icon-btn"
@@ -123,7 +81,6 @@ function isActive(link: string): boolean {
         aria-label="Toggle theme"
         title="Toggle theme"
       >
-        <span class="i-lucide-monitor icon-system size-5" aria-hidden="true"></span>
         <span class="i-lucide-sun icon-light size-5" aria-hidden="true"></span>
         <span class="i-lucide-moon icon-dark size-5" aria-hidden="true"></span>
       </button>
@@ -138,7 +95,7 @@ function isActive(link: string): boolean {
 >
   {config.header.menu.map((item) => (
     <a
-      href={withBase(navHref(item.link))}
+      href={withBase(item.link)}
       aria-current={isActive(item.link) ? 'page' : undefined}
       class="nav-link flex-none rounded-md px-3 py-1 text-sm text-ink-soft transition-colors duration-200 hover:text-accent focus-visible:text-accent"
     >
@@ -180,12 +137,6 @@ function isActive(link: string): boolean {
     border-bottom: 1px solid currentColor;
   }
 
-  .language-link[aria-current='page'] {
-    color: hsl(var(--accent));
-    text-decoration: underline;
-    text-underline-offset: 0.2em;
-  }
-
   .icon-btn {
     display: inline-flex;
     align-items: center;
@@ -213,15 +164,13 @@ function isActive(link: string): boolean {
   }
 
   /* Theme icons: only the icon matching [data-theme] is shown */
-  #theme-toggle .icon-system,
   #theme-toggle .icon-light,
   #theme-toggle .icon-dark {
     display: none;
   }
 
   :global(html[data-theme='light']) #theme-toggle .icon-light,
-  :global(html[data-theme='dark']) #theme-toggle .icon-dark,
-  :global(html[data-theme='system']) #theme-toggle .icon-system {
+  :global(html[data-theme='dark']) #theme-toggle .icon-dark {
     display: inline-block;
   }
 
@@ -240,9 +189,4 @@ function isActive(link: string): boolean {
   onScroll()
   window.addEventListener('scroll', onScroll, { passive: true })
 
-  document.querySelectorAll<HTMLAnchorElement>('[data-language]').forEach((link) => {
-    link.addEventListener('click', () =>
-      localStorage.setItem('language', link.dataset.language ?? 'en'),
-    )
-  })
 </script>

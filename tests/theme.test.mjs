@@ -6,7 +6,7 @@ import { THEME_COLORS } from '../src/utils/theme.ts'
 
 const source = readFileSync(new URL('../src/scripts/theme.js', import.meta.url), 'utf8')
 
-function page({ stored = {}, defaultTheme = 'system', dark = false, blockedStorage = false } = {}) {
+function page({ stored = {}, defaultTheme = 'light', blockedStorage = false } = {}) {
   const classes = new Set()
   const root = {
     dataset: { defaultTheme, defaultPalette: 'fresh' },
@@ -28,12 +28,6 @@ function page({ stored = {}, defaultTheme = 'system', dark = false, blockedStora
     }
   }
   const handlers = {}
-  const media = {
-    matches: dark,
-    addEventListener(name, callback) {
-      handlers[name] = callback
-    }
-  }
   const meta = {
     setAttribute(name, value) {
       this[name] = value
@@ -55,7 +49,6 @@ function page({ stored = {}, defaultTheme = 'system', dark = false, blockedStora
         handlers[name] = callback
       }
     },
-    matchMedia: () => media,
     localStorage: {
       getItem(key) {
         if (blockedStorage) throw Error('Unavailable')
@@ -76,10 +69,6 @@ function page({ stored = {}, defaultTheme = 'system', dark = false, blockedStora
     classes,
     click(id) {
       handlers.click({ target: new Element(id) })
-    },
-    changeOS(dark) {
-      media.matches = dark
-      handlers.change()
     }
   }
 }
@@ -91,32 +80,23 @@ function expectPaint(p, palette, dark) {
   assert.equal(p.classes.has('fresh'), palette === 'fresh')
 }
 
-test('first paint respects both saved palettes and all theme modes', () => {
+test('first paint respects both saved palettes and light/dark themes', () => {
   for (const palette of ['ink', 'fresh']) {
-    for (const theme of ['system', 'light', 'dark']) {
-      for (const osDark of [false, true]) {
-        const p = page({ stored: { 'ink-palette': palette, 'ink-theme': theme }, dark: osDark })
-        expectPaint(p, palette, theme === 'dark' || (theme === 'system' && osDark))
-      }
+    for (const theme of ['light', 'dark']) {
+      const p = page({ stored: { 'ink-palette': palette, 'ink-theme': theme } })
+      expectPaint(p, palette, theme === 'dark')
     }
   }
 })
 
-test('OS changes repaint only in system mode; switches update background and chrome together', () => {
+test('switches toggle light/dark and update the palette and browser chrome together', () => {
   const p = page()
-  p.changeOS(true)
-  expectPaint(p, 'fresh', true)
-  p.click('theme-toggle') // system -> light
-  p.changeOS(false)
-  p.changeOS(true)
   expectPaint(p, 'fresh', false)
-  p.click('palette-toggle')
-  expectPaint(p, 'ink', false)
   p.click('theme-toggle') // light -> dark
+  expectPaint(p, 'fresh', true)
+  p.click('palette-toggle')
   expectPaint(p, 'ink', true)
-  p.changeOS(false)
-  expectPaint(p, 'ink', true)
-  p.click('theme-toggle') // dark -> system, follows the current OS
+  p.click('theme-toggle') // dark -> light
   expectPaint(p, 'ink', false)
 })
 
@@ -124,7 +104,7 @@ test('controls remain usable without localStorage and honor configured starting 
   const p = page({ defaultTheme: 'dark', blockedStorage: true })
   expectPaint(p, 'fresh', true)
   p.click('theme-toggle')
-  assert.equal(p.root.dataset.theme, 'system')
+  assert.equal(p.root.dataset.theme, 'light')
   expectPaint(p, 'fresh', false)
   p.click('palette-toggle')
   expectPaint(p, 'ink', false)
@@ -135,7 +115,7 @@ test('saved preferences survive reload and invalid stored values use defaults', 
   const p = page({ stored })
   p.click('palette-toggle')
   p.click('theme-toggle')
-  expectPaint(page({ stored, dark: true }), 'ink', false)
+  expectPaint(page({ stored }), 'ink', true)
   expectPaint(
     page({ stored: { 'ink-theme': 'invalid', 'ink-palette': 'invalid' } }),
     'fresh',

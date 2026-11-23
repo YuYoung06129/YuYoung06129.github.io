@@ -77,8 +77,8 @@ export interface Config {
     since: number
     /** Default color palette for first-time visitors: 'ink' (warm) | 'fresh' (mint) */
     palette: 'ink' | 'fresh'
-    /** Default theme for first-time visitors: 'light' | 'dark' | 'system' (follow OS) */
-    theme: 'light' | 'dark' | 'system'
+    /** Default theme for first-time visitors */
+    theme: 'light' | 'dark'
     /** e.g. " · " */
     titleDelimiter: string
   }
@@ -134,7 +134,7 @@ export const config: Config = {
     ogImage: '/favicon.svg',
     since: 2025,
     palette: 'ink',
-    theme: 'system',
+    theme: 'light',
     titleDelimiter: ' · ',
   },
 
