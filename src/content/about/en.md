@@ -63,6 +63,8 @@ description: Interested in security research, CVE analysis, web hacking, forensi
 
 ### Vulnerability Disclosures
 
+- [CVE-2026-136230](https://www.mozilla.org/en-US/security/advisories/mfsa2026-134/#CVE-2026-136230)
+- [CVE-2026-136231](https://www.mozilla.org/en-US/security/advisories/mfsa2026-134/#CVE-2026-136231)
 - [CVE-2026-118175](https://www.mozilla.org/en-US/security/advisories/mfsa2026-122/#CVE-2026-118175)
 - [CVE-2026-118176](https://www.mozilla.org/en-US/security/advisories/mfsa2026-122/#CVE-2026-118176)
 - KVE-2026-XXXX (Stored XSS)
